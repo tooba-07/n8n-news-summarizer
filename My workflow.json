@@ -1,0 +1,117 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "feedUrl": "http://feeds.bbci.co.uk/news/world/rss.xml"
+      },
+      "type": "n8n-nodes-base.rssFeedReadTrigger",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        0
+      ],
+      "id": "eb05328f-04ba-4f02-a861-c36e82749aef",
+      "name": "RSS Feed Trigger"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "models/gemini-3-flash-preview"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Summarize this news article in 2 short sentences: {{ $json.contentSnippet }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        64,
+        0
+      ],
+      "id": "e706b053-7f1b-4242-a905-71c640c542ba",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "nb36bbGcUDUwc3h9",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "webhook",
+        "content": "={{ $json.content.parts[0].text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        368,
+        0
+      ],
+      "id": "b6fa8394-abcd-4c62-858c-e4288eb02202",
+      "name": "Discord",
+      "webhookId": "1b58fc1b-d699-400e-9942-e43fe1c915e5",
+      "credentials": {
+        "discordWebhookApi": {
+          "id": "uZGm7R5XwOM3QDFN",
+          "name": "Discord Webhook account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "RSS Feed Trigger": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Discord",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "2773618d-c654-4237-856f-a50b97cec699",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "36ba7341cc0f77589bd56a77c9a94552d46b74d499ddb92fba831487aa3f3fda"
+  },
+  "nodeGroups": [],
+  "id": "mzHmSwXqfzQZs6TL",
+  "tags": []
+}
